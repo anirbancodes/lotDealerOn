@@ -12,7 +12,7 @@ async function fetchDate() {
     .then((res) => res.json())
     .then((res) => {
       date = res.date;
-      time = res.time;
+      time = res.time + " " + res.ampm;
       console.log("api call");
     })
     .catch((err) => console.error(err));

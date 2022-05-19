@@ -21,7 +21,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth();
-//import { fetchTime } from "./index.js";
+import { fetchDate } from "../js/time.js";
 onAuthStateChanged(auth, (user) => {
   if (user) {
     const uid = user.uid;
@@ -37,50 +37,58 @@ async function loadUserData(email) {
   if (docSnap.exists()) {
     let data = docSnap.data();
     showUserCredits(data.name, data.credit);
-    let now = new Date();
-    let date =
-      now.getFullYear() + "-" + (now.getMonth() + 1) + "-" + now.getDate();
+    let { date } = await fetchDate();
     historyTable(email, date);
   }
 }
-//displayTime();
-async function displayTime() {
-  await fetchTime();
-  document.getElementById("time-counter").innerHTML = time;
-  // t();
-}
+
 function showUserCredits(name, credit) {
   document.getElementById("profile-name").textContent += name;
   document.getElementById("user-credit").textContent = credit;
 }
-async function historyTable(email, date) {
-  const ref = doc(db, "dealers", email, "offline", "lotto", "credits", date);
-
+async function historyTable(email, date, AC) {
+  if (!date) {
+    //
+  }
+  document.getElementById("comment-text").innerText = "";
+  const ref = doc(db, "dealers", email, "credits", date);
+  if (!AC) AC = "agents";
   const docSnap = await getDoc(ref);
   if (docSnap.exists()) {
-    const credits = docSnap.data().cred;
-    document.getElementById("credit-table").innerHTML = `<div class="line">
-    <p class="number">Time</p>
-    <p class="number" style="margin-left: 20px">
-      &emsp;&emsp;&emsp;&emsp;&emsp;Amt
-    </p>
-  </div>`;
-    credits.forEach((trans) => {
-      document.getElementById("credit-table").innerHTML +=
-        `  <div class="line">
-        <p class="number">` +
-        trans.time +
+    const credits = docSnap.data()[AC];
+    if (!credits) {
+      document.getElementById(
+        "comment-text"
+      ).innerText = `No ${AC} credits transfer today`;
+      return;
+    }
+    credits.forEach((i) => {
+      document.getElementById("credits-list").innerHTML =
+        `<div class="client m-b-5">
+      <div class="p-1-5">
+        <p>` +
+        i.email +
         `</p>
-        <p class="number" style="margin-left: 20px">:&emsp; ` +
-        trans.amt +
+        <div class="card-inner">
+          <p style="color: orangered">` +
+        i.amt +
         `</p>
-      </div>`;
+          <p>` +
+        i.time +
+        `</p>
+        </div>
+      </div>
+    </div>`;
     });
+  } else {
+    document.getElementById("comment-text").innerText =
+      "No credits transfer today";
   }
 }
 const showBtn = document.getElementById("showBtn");
 showBtn.addEventListener("click", () => {
   let date = document.getElementById("date").value;
+  let AC = document.getElementById("agent-client").value;
   let i1 = date.indexOf("-"),
     i2 = date.lastIndexOf("-");
   date =
@@ -95,5 +103,5 @@ showBtn.addEventListener("click", () => {
     date = date1;
   }
 
-  historyTable(auth.currentUser.email, date);
+  historyTable(auth.currentUser.email, date, AC);
 });

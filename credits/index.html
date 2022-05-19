@@ -12,57 +12,60 @@
     body {
       font-family: "lato", sans-serif;
     }
-    .line {
-      flex-direction: row;
+    .card-inner {
       display: flex;
-      margin-bottom: -25px;
-      white-space: initial;
+      justify-content: space-between;
+      margin-top: -25px;
+      margin-bottom: -10px;
     }
-    .line > p {
-      white-space: initial;
-      overflow-wrap: break-word;
-      word-wrap: break-word;
-      hyphens: auto;
+    .m-b-5 {
+      margin-bottom: 10px;
     }
-    .number {
-      font-size: 18px;
+    .p-1-5 {
+      padding: 1px 5px;
     }
   </style>
   <body>
     <div class="header">
       <div style="display: flex; justify-content: space-between">
-        <h2>>> PlayLot</h2>
+        <h2>>> PlayLotto</h2>
         <h3 class="margin-left-pc" id="time-counter"></h3>
       </div>
       <div class="header-user">
-        <p class="mob-margin-top-less-15" id="profile-name">Dealer:&nbsp;</p>
+        <p class="mob-margin-top-less-15" id="profile-name"></p>
         <p class="mob-margin-top-less-15">
           Credits: <span id="user-credit"></span>
         </p>
       </div>
     </div>
-
-    <div
-      style="display: flex; justify-content: space-evenly; margin-bottom: 15px"
-    >
-      <div class="header-option header-option" id="header-game">
-        <p>Game</p>
+    <div style="display: flex; justify-content: space-evenly">
+      <div class="header-option" id="header-agents">
+        <p>Agents</p>
       </div>
-      <div class="header-option" id="header-history">
-        <p>History</p>
+      <div class="header-option" id="header-clients">
+        <p>Clients</p>
       </div>
-      <div class="header-option" id="header-sale">
-        <p>Sale</p>
-      </div>
-      <div class="header-option-active" id="header-credits">
+      <div class="header-option header-option-active" id="header-credits">
         <p>Credits</p>
       </div>
     </div>
-
+    <br />
     <div style="padding: 10px 20px">
       <input type="date" id="date" />
+      <select
+        name="agent-client"
+        id="agent-client"
+        class="btn-submit"
+        style="color: white; background-color: orangered"
+      >
+        <option value="agents">Agents</option>
+        <option value="clients">Clients</option>
+      </select>
+      <br /><br />
+
       <a style="text-align: center" class="btn-submit" id="showBtn">Show</a>
-      <div id="credit-table"></div>
+      <br /><br />
+      <div id="credits-list"></div>
     </div>
     <p id="comment-text" style="text-align: center"></p>
 

@@ -17,17 +17,13 @@ import {
 import {
   getDoc,
   doc,
-  updateDoc,
   arrayUnion,
-  serverTimestamp,
   runTransaction,
   increment,
-  setDoc,
-  writeBatch,
   getFirestore,
 } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
-import { fetchDate } from "./time.js";
+import { fetchDate } from "../js/time.js";
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth();
@@ -61,7 +57,7 @@ async function loadUserData(email) {
     const ref2 = doc(db, "dealers", email, "online", "lotto");
     const docSnap2 = await getDoc(ref2);
     if (docSnap2.exists()) {
-      let agents = docSnap2.data().agents;
+      let agents = docSnap2.data().clients;
       drawClientList(agents);
     }
   }
@@ -80,35 +76,33 @@ async function drawClientList(data) {
     let email = i.email;
     document.getElementById("agents").innerHTML +=
       `<div class="client">
-    <div style="display: flex; justify-content: space-between">
-      <p>` +
+      <div style="display: flex; justify-content: space-between">
+        <p>` +
       i.name +
       `</p>
       <p style="display: none;" id="day-sale-` +
-      email +
-      `">Day Sale: 5000</p>
+      i.email +
+      `">Balance: [?]</p>
       <p class="hollow-btn-text" id="showBtn-` +
-      email +
-      `">Show Day Sale</p>
-    </div>
-    <p style="margin-top: -15px">` +
+      i.email +
+      `">Show Balance</p>
+      </div>
+      <p style="margin-top: -15px">` +
       email +
       `</p>
-    <div style="display: flex; justify-content: space-around">
-      <button class="btn-submit" id="add-` +
+      <div style="display: flex; justify-content: space-around">
+        <button class="btn-submit" id="add-` +
       email +
       `">+</button>
-      <button class="btn-submit" id="subs-` +
+        <button class="btn-submit" id="subs-` +
       email +
       `">-</button>
-      <button class="btn-submit" id="details-` +
-      email +
-      `">Details</button>
-    </div>
-    <input type="number" class="cred-amt"  placeholder="0" id="credAmt-` +
+       
+      </div>
+      <input type="number" class="cred-amt"  placeholder="0" id="credAmt-` +
       email +
       `">
-  </div>`;
+    </div>`;
     emails.push(email);
   });
   addDOMfunc(emails);
@@ -118,71 +112,52 @@ async function addDOMfunc(emails) {
   emails.forEach((u_email) => {
     let addBtn = document.getElementById(`add-${u_email}`);
     addBtn.addEventListener("click", async (e) => {
-      const dealerEmail = auth.currentUser.email;
       let amount = Number(document.getElementById(`credAmt-${u_email}`).value);
       if (amount <= 0) {
         alert("Enter min. 1 credit");
         return;
       }
+      const dealerEmail = auth.currentUser.email;
       await addCred(dealerEmail, u_email, amount);
     });
 
     let subsBtn = document.getElementById(`subs-${u_email}`);
     subsBtn.addEventListener("click", async (e) => {
-      const dealerEmail = auth.currentUser.email;
       let amount = Number(document.getElementById(`credAmt-${u_email}`).value);
       if (amount <= 0) {
         alert("Enter min. 1 credit");
         return;
       }
+      const dealerEmail = auth.currentUser.email;
       await subsCred(dealerEmail, u_email, amount);
-    });
-
-    let detailsBtn = document.getElementById(`details-${u_email}`);
-    detailsBtn.addEventListener("click", async (e) => {
-      window.location = `./details/index.html?${u_email}`;
     });
 
     let showBtn = document.getElementById(`showBtn-${u_email}`);
     showBtn.addEventListener("click", async (e) => {
-      daySale(u_email);
+      showBal(u_email);
     });
   });
 }
 
-async function daySale(mail) {
-  let { date } = await fetchDate();
-  const daySale = await getDoc(
-    doc(db, "agents", mail, "offline", "lotto", "sale", date)
-  );
-  if (!daySale.exists()) {
+async function showBal(mail) {
+  const balDoc = await getDoc(doc(db, "users", mail));
+  if (!balDoc.exists()) {
     document.getElementById(`showBtn-${mail}`).style.display = "none";
     document.getElementById(`day-sale-${mail}`).style.display = "";
-    document.getElementById(`day-sale-${mail}`).innerText = "No sale today";
+    document.getElementById(`day-sale-${mail}`).innerText = "Unavailable";
     return;
   }
-  let totSale = 0;
-  let keys = Object.keys(daySale.data());
-  keys.forEach((dtime) => {
-    totSale += daySale[dtime];
-  });
+  const balance = balDoc.data().credit;
+
   document.getElementById(`showBtn-${mail}`).style.display = "none";
   document.getElementById(`day-sale-${mail}`).style.display = "";
-  document.getElementById(`day-sale-${mail}`).innerText = "Today: " + totSale;
+  document.getElementById(`day-sale-${mail}`).innerText = "Balance: " + balance;
 }
 
 async function addCred(dealerEmail, u_email, amount) {
   try {
     let { date, time } = await fetchDate();
     await runTransaction(db, async (transaction) => {
-      const balance = (
-        await transaction.get(doc(db, "dealers", dealerEmail))
-      ).data().credit;
-      if (balance < amount) {
-        alert("Not enough balance. Add credits");
-        return;
-      }
-
       const creditsDateDoc = await transaction.get(
         doc(db, "dealers", dealerEmail, "credits", date)
       );
@@ -194,11 +169,11 @@ async function addCred(dealerEmail, u_email, amount) {
         credit: increment(-1 * amount),
       });
 
-      transaction.update(doc(db, "agents", u_email), {
+      transaction.update(doc(db, "users", u_email), {
         credit: increment(amount),
       });
       transaction.set(doc(db, "dealers", dealerEmail, "credits", date), {
-        agents: arrayUnion({
+        clients: arrayUnion({
           time: time,
           amt: amount,
           email: u_email,
@@ -218,16 +193,8 @@ async function addCred(dealerEmail, u_email, amount) {
 async function subsCred(dealerEmail, u_email, amount) {
   try {
     let { date, time } = await fetchDate();
-
+    console.log(time, date);
     await runTransaction(db, async (transaction) => {
-      const agentBalance = (
-        await transaction.get(doc(db, "agents", u_email))
-      ).data().credit;
-      if (agentBalance < amount) {
-        alert("Not enough balance in agent");
-        return;
-      }
-
       const creditsDateDoc = await transaction.get(
         doc(db, "dealers", dealerEmail, "credits", date)
       );
@@ -239,11 +206,11 @@ async function subsCred(dealerEmail, u_email, amount) {
         credit: increment(amount),
       });
 
-      transaction.update(doc(db, "agents", u_email), {
+      transaction.update(doc(db, "users", u_email), {
         credit: increment(-1 * amount),
       });
       transaction.update(doc(db, "dealers", dealerEmail, "credits", date), {
-        agents: arrayUnion({
+        clients: arrayUnion({
           time: time,
           amt: -1 * amount,
           email: u_email,
