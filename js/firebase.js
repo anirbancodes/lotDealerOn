@@ -17,13 +17,9 @@ import {
 import {
   getDoc,
   doc,
-  updateDoc,
   arrayUnion,
-  serverTimestamp,
   runTransaction,
   increment,
-  setDoc,
-  writeBatch,
   getFirestore,
 } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
@@ -120,7 +116,7 @@ async function addDOMfunc(emails) {
     addBtn.addEventListener("click", async (e) => {
       const dealerEmail = auth.currentUser.email;
       let amount = Number(document.getElementById(`credAmt-${u_email}`).value);
-      if (amount <= 0) {
+      if (amount < 1) {
         alert("Enter min. 1 credit");
         return;
       }
@@ -131,7 +127,7 @@ async function addDOMfunc(emails) {
     subsBtn.addEventListener("click", async (e) => {
       const dealerEmail = auth.currentUser.email;
       let amount = Number(document.getElementById(`credAmt-${u_email}`).value);
-      if (amount <= 0) {
+      if (amount < 1) {
         alert("Enter min. 1 credit");
         return;
       }
@@ -181,29 +177,46 @@ async function addCred(dealerEmail, u_email, amount) {
       if (balance < amount) {
         alert("Not enough balance. Add credits");
         return;
+      } else {
+        const creditsDateDoc = await transaction.get(
+          doc(db, "dealers", dealerEmail, "credits", date)
+        );
+
+        const agentCreditDate = await transaction.get(
+          doc(db, "agents", u_email, "credits", date)
+        );
+
+        if (!creditsDateDoc.exists()) {
+          transaction.set(doc(db, "dealers", dealerEmail, "credits", date), {});
+        }
+        if (!agentCreditDate.exists()) {
+          transaction.set(doc(db, "agents", u_email, "credits", date), {});
+        }
+        transaction.update(doc(db, "dealers", dealerEmail), {
+          credit: increment(-1 * amount),
+        });
+
+        transaction.update(doc(db, "agents", u_email), {
+          credit: increment(amount),
+        });
+        transaction.update(doc(db, "agents", u_email, "offline", "lotto"), {
+          credit: increment(amount),
+        });
+        transaction.update(doc(db, "agents", u_email, "credits", date), {
+          lotto: arrayUnion({
+            time: time,
+            dg: "d",
+            amt: amount,
+          }),
+        });
+        transaction.update(doc(db, "dealers", dealerEmail, "credits", date), {
+          agents: arrayUnion({
+            time: time,
+            amt: amount,
+            email: u_email,
+          }),
+        });
       }
-
-      const creditsDateDoc = await transaction.get(
-        doc(db, "dealers", dealerEmail, "credits", date)
-      );
-
-      if (!creditsDateDoc.exists()) {
-        transaction.set(doc(db, "dealers", dealerEmail, "credits", date), {});
-      }
-      transaction.update(doc(db, "dealers", dealerEmail), {
-        credit: increment(-1 * amount),
-      });
-
-      transaction.update(doc(db, "agents", u_email), {
-        credit: increment(amount),
-      });
-      transaction.set(doc(db, "dealers", dealerEmail, "credits", date), {
-        agents: arrayUnion({
-          time: time,
-          amt: amount,
-          email: u_email,
-        }),
-      });
     });
     console.log("Transaction successfully committed!");
     document.getElementById(`credAmt-${u_email}`).value = 0;
@@ -226,29 +239,46 @@ async function subsCred(dealerEmail, u_email, amount) {
       if (agentBalance < amount) {
         alert("Not enough balance in agent");
         return;
+      } else {
+        const creditsDateDoc = await transaction.get(
+          doc(db, "dealers", dealerEmail, "credits", date)
+        );
+        const agentCreditDate = await transaction.get(
+          doc(db, "agents", u_email, "credits", date)
+        );
+
+        if (!creditsDateDoc.exists()) {
+          transaction.set(doc(db, "dealers", dealerEmail, "credits", date), {});
+        }
+        if (!agentCreditDate.exists()) {
+          transaction.set(doc(db, "agents", u_email, "credits", date), {});
+        }
+
+        transaction.update(doc(db, "dealers", dealerEmail), {
+          credit: increment(amount),
+        });
+
+        transaction.update(doc(db, "agents", u_email), {
+          credit: increment(-1 * amount),
+        });
+        transaction.update(doc(db, "agents", u_email, "offline", "lotto"), {
+          credit: increment(-1 * amount),
+        });
+        transaction.update(doc(db, "agents", u_email, "credits", date), {
+          lotto: arrayUnion({
+            time: time,
+            dg: "d",
+            amt: -1 * amount,
+          }),
+        });
+        transaction.update(doc(db, "dealers", dealerEmail, "credits", date), {
+          agents: arrayUnion({
+            time: time,
+            amt: -1 * amount,
+            email: u_email,
+          }),
+        });
       }
-
-      const creditsDateDoc = await transaction.get(
-        doc(db, "dealers", dealerEmail, "credits", date)
-      );
-
-      if (!creditsDateDoc.exists()) {
-        transaction.set(doc(db, "dealers", dealerEmail, "credits", date), {});
-      }
-      transaction.update(doc(db, "dealers", dealerEmail), {
-        credit: increment(amount),
-      });
-
-      transaction.update(doc(db, "agents", u_email), {
-        credit: increment(-1 * amount),
-      });
-      transaction.update(doc(db, "dealers", dealerEmail, "credits", date), {
-        agents: arrayUnion({
-          time: time,
-          amt: -1 * amount,
-          email: u_email,
-        }),
-      });
     });
     console.log("Transaction successfully committed!");
     document.getElementById(`credAmt-${u_email}`).value = 0;
