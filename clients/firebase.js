@@ -194,7 +194,7 @@ async function addCred(dealerEmail, u_email, amount) {
             amt: amount,
           }),
         });
-        transaction.set(doc(db, "dealers", dealerEmail, "credits", date), {
+        transaction.update(doc(db, "dealers", dealerEmail, "credits", date), {
           clients: arrayUnion({
             time: time,
             amt: amount,
