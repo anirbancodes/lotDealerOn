@@ -50,6 +50,7 @@ async function historyTable(email, date, AC) {
   if (!date) {
     //
   }
+  document.getElementById("credits-list").innerHTML = "";
   document.getElementById("comment-text").innerText = "";
   const ref = doc(db, "dealers", email, "credits", date);
   if (!AC) AC = "agents";
@@ -63,7 +64,7 @@ async function historyTable(email, date, AC) {
       return;
     }
     credits.forEach((i) => {
-      document.getElementById("credits-list").innerHTML =
+      document.getElementById("credits-list").innerHTML +=
         `<div class="client m-b-5">
       <div class="p-1-5">
         <p>` +
