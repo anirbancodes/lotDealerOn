@@ -15,12 +15,11 @@ const optionsQcTime1 = {
 };
 
 async function fetchDate() {
-  let apiData;
- let date, time;
+  let date, time;
   await fetch("https://qctime1.p.rapidapi.com/time", optionsQcTime1)
     .then((res) => res.json())
     .then((res) => {
-     date = res.date;
+      date = res.date;
       time = res.time + " " + res.ampm;
     })
     .catch(async (err) => {
@@ -28,12 +27,11 @@ async function fetchDate() {
         .then((res) => res.json())
         .then((res) => {
           date = res.date;
-      time = res.time + " " + res.ampm;
+          time = res.time + " " + res.ampm;
         });
     });
   return { date, time };
 }
-
 
 await fetchDate();
 export { fetchDate };

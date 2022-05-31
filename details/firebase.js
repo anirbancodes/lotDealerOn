@@ -1,24 +1,15 @@
 import {
   getAuth,
   onAuthStateChanged,
-  signOut,
 } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
-
 import {
   getDoc,
   doc,
   getFirestore,
 } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-const firebaseConfig = {
-  apiKey: "AIzaSyAVgBu0P69xgUHnZ2Cc4G5IX6gHtb4-MBE",
-  authDomain: "qclottery.firebaseapp.com",
-  projectId: "qclottery",
-  storageBucket: "qclottery.appspot.com",
-  messagingSenderId: "650163027647",
-  appId: "1:650163027647:web:961de905315b549657500a",
-};
-const app = initializeApp(firebaseConfig);
+import { fc } from "/js/c.js";
+const app = initializeApp(fc);
 const db = getFirestore(app);
 const auth = getAuth();
 //import { fetchTime } from "./index.js";
@@ -26,13 +17,15 @@ onAuthStateChanged(auth, (user) => {
   if (user) {
     const uid = user.uid;
     //showUserEmail(user.email);
-    loadUserData(user.email);
+    const params = new URL(document.location).searchParams;
+    const agent_email = params.get("a");
+    loadAgentData(agent_email);
   } else {
     window.location = "/pages/login.html";
   }
 });
-async function loadUserData(email) {
-  const ref = doc(db, "dealers", email);
+async function loadAgentData(email) {
+  const ref = doc(db, "agents", email);
   const docSnap = await getDoc(ref);
   if (docSnap.exists()) {
     let data = docSnap.data();
@@ -40,12 +33,7 @@ async function loadUserData(email) {
     saleTbody(email);
   }
 }
-//displayTime();
-async function displayTime() {
-  await fetchTime();
-  document.getElementById("time-counter").innerHTML = time;
-  // t();
-}
+
 function showUserCredits(name, credit) {
   document.getElementById("profile-name").textContent += name;
   document.getElementById("user-credit").textContent = credit;
@@ -57,11 +45,14 @@ async function saleTbody(email, date) {
       now.getFullYear() + "-" + (now.getMonth() + 1) + "-" + now.getDate();
     date = date1;
   }
-  const ref = doc(db, "dealers", email, "offline", "lotto", "sale", date);
+  const ref = doc(db, "agents", email, "offline", "lotto", "sale", date);
   const docSnap = await getDoc(ref);
+  document.getElementById("sale-tbody").innerHTML = "";
+  document.getElementById("dayTotSale").innerHTML = 0;
   if (docSnap.exists()) {
     const sale = docSnap.data();
     if (!sale) {
+      document.getElementById("sale-tbody").innerHTML = "";
       document.getElementById("dayTotSale").innerHTML = "No sale on " + date;
     } else {
       document.getElementById(
@@ -98,6 +89,7 @@ showBtn.addEventListener("click", () => {
     (Number(date.substring(i1 + 1, i2)) / 10) * 10 +
     "-" +
     (Number(date.substring(i2 + 1, i2 + 3)) / 10) * 10;
-  console.log(date);
-  saleTbody(auth.currentUser.email, date);
+  const params = new URL(document.location).searchParams;
+  const ae = params.get("a");
+  saleTbody(ae, date);
 });

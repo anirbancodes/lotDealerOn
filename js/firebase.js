@@ -1,12 +1,3 @@
-const firebaseConfig = {
-  apiKey: "AIzaSyAVgBu0P69xgUHnZ2Cc4G5IX6gHtb4-MBE",
-  authDomain: "qclottery.firebaseapp.com",
-  projectId: "qclottery",
-  storageBucket: "qclottery.appspot.com",
-  messagingSenderId: "650163027647",
-  appId: "1:650163027647:web:961de905315b549657500a",
-};
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
 
 import {
@@ -14,6 +5,7 @@ import {
   onAuthStateChanged,
   signOut,
 } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+import { fc } from "/js/c.js";
 import {
   getDoc,
   doc,
@@ -24,7 +16,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
 import { fetchDate } from "./time.js";
-const app = initializeApp(firebaseConfig);
+const app = initializeApp(fc);
 const db = getFirestore(app);
 const auth = getAuth();
 
@@ -136,7 +128,7 @@ async function addDOMfunc(emails) {
 
     let detailsBtn = document.getElementById(`details-${u_email}`);
     detailsBtn.addEventListener("click", async (e) => {
-      window.location = `./details/index.html?${u_email}`;
+      window.location = `./details/index.html?a=${u_email}`;
     });
 
     let showBtn = document.getElementById(`showBtn-${u_email}`);
@@ -224,7 +216,7 @@ async function addCred(dealerEmail, u_email, amount) {
       .credit;
     document.getElementById("user-credit").textContent = newCredit;
   } catch (e) {
-    alert("Transaction failed: " + e);
+    alert("Error, failed.");
   }
 }
 
@@ -286,6 +278,6 @@ async function subsCred(dealerEmail, u_email, amount) {
       .credit;
     document.getElementById("user-credit").textContent = newCredit;
   } catch (e) {
-    alert("Transaction failed: " + e);
+    alert("Error, failed");
   }
 }

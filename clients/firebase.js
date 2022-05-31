@@ -209,7 +209,7 @@ async function addCred(dealerEmail, u_email, amount) {
       .credit;
     document.getElementById("user-credit").textContent = newCredit;
   } catch (e) {
-    alert("Transaction failed: " + e);
+    alert("Error !");
   }
 }
 
@@ -268,6 +268,6 @@ async function subsCred(dealerEmail, u_email, amount) {
       .credit;
     document.getElementById("user-credit").textContent = newCredit;
   } catch (e) {
-    alert("Transaction failed: " + e);
+    alert("Error");
   }
 }

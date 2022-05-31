@@ -1,10 +1,33 @@
+<!--
+*
+*
+*
+*
+*                    * This is a product of QuickPlay Technologies LLP & its associates, companies, sites, etc.
+*                    *
+*                    * All of the content including but not limited to the design & data in this site is copyrighted.
+*                    * 
+*                    * By Viewing this source code, you agree to our Terms of Use & Privacy Policy, which is available on:
+*                    *
+*                    * https://mylot.org/tnc
+*                    *
+*                    * No legal criminal, civil or family action and harm can be caused to the owning entities including but not limited to
+*                    *
+*                    * directors, dealers, super, agents and QuickPlay LLP in any means whatsoever.
+*                    *
+*                    * Your further viewing of this site or code means you agree to accept the above terms.
+*
+*
+*
+-->
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sale-Dealer | MyLotto</title>
+    <title>Agent Sale | MyLotto</title>
     <link rel="stylesheet" href="../style.css" />
   </head>
 
@@ -59,13 +82,13 @@
   <body>
     <div class="header">
       <div style="display: flex; justify-content: space-between">
-        <h2>>> MyLot</h2>
+        <h2 style="font-family: Poppins">>> MyLot</h2>
         <h3 class="margin-left-pc" id="time-counter"></h3>
       </div>
       <div class="header-user">
-        <p class="mob-margin-top-less-15" id="profile-name">Dealer:&nbsp;</p>
+        <p class="mob-margin-top-less-15" id="profile-name">Agent:&nbsp;</p>
         <p class="mob-margin-top-less-15">
-          Credits: <span id="user-credit"></span>
+          Agent Balance: <span id="user-credit"></span>
         </p>
       </div>
     </div>
@@ -73,18 +96,7 @@
     <div
       style="display: flex; justify-content: space-evenly; margin-bottom: 15px"
     >
-      <div class="header-option header-option" id="header-game">
-        <p>Game</p>
-      </div>
-      <div class="header-option" id="header-history">
-        <p>History</p>
-      </div>
-      <div class="header-option-active" id="header-sale">
-        <p>Sale</p>
-      </div>
-      <div class="header-option" id="header-credits">
-        <p>Credits</p>
-      </div>
+      <a class="btn-submit" href="/">Back</a>
     </div>
     <div id="sale-div" style="padding: 0px 10px">
       <div style="display: flex; justify-content: center">
@@ -124,8 +136,7 @@
         domains
       </p>
     </div>
-    <script src="../style.js"></script>
-    <script type="module" src="/sale/firebase.js"></script>
-    <script type="module" src="/sale/showPrevious.js"></script>
+
+    <script type="module" src="/details/firebase.js"></script>
   </body>
 </html>
