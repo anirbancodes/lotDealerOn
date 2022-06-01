@@ -48,7 +48,10 @@ function showUserCredits(name, credit) {
 }
 async function historyTable(email, date, AC) {
   if (!date) {
-    //
+    let now = new Date();
+    let date1 =
+      now.getFullYear() + "-" + (now.getMonth() + 1) + "-" + now.getDate();
+    date = date1;
   }
   document.getElementById("credits-list").innerHTML = "";
   document.getElementById("comment-text").innerText = "";
