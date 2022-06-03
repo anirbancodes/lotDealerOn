@@ -74,7 +74,7 @@ async function drawClientList(data) {
       `</p>
       <p style="display: none;" id="day-sale-` +
       email +
-      `">Day Sale: 5000</p>
+      `">Day Sale: -</p>
       <p class="hollow-btn-text" id="showBtn-` +
       email +
       `">Show Day Sale</p>
@@ -128,7 +128,7 @@ async function addDOMfunc(emails) {
 
     let detailsBtn = document.getElementById(`details-${u_email}`);
     detailsBtn.addEventListener("click", async (e) => {
-      window.location = `./details/index.html?a=${u_email}`;
+      window.location = `./agent-details/index.html?a=${u_email}`;
     });
 
     let showBtn = document.getElementById(`showBtn-${u_email}`);
@@ -146,7 +146,7 @@ async function daySale(mail) {
   if (!daySale.exists()) {
     document.getElementById(`showBtn-${mail}`).style.display = "none";
     document.getElementById(`day-sale-${mail}`).style.display = "";
-    document.getElementById(`day-sale-${mail}`).innerText = "No sale today";
+    document.getElementById(`day-sale-${mail}`).innerText = "₹0";
     return;
   }
   let totSale = 0;
@@ -156,7 +156,7 @@ async function daySale(mail) {
   });
   document.getElementById(`showBtn-${mail}`).style.display = "none";
   document.getElementById(`day-sale-${mail}`).style.display = "";
-  document.getElementById(`day-sale-${mail}`).innerText = "Today: " + totSale;
+  document.getElementById(`day-sale-${mail}`).innerText = "Today: ₹" + totSale;
 }
 
 async function addCred(dealerEmail, u_email, amount) {

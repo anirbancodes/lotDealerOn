@@ -1,0 +1,142 @@
+<!--
+*
+*
+*
+*
+*                    * This is a product of QuickPlay Technologies LLP & its associates, companies, sites, etc.
+*                    *
+*                    * All of the content including but not limited to the design & data in this site is copyrighted.
+*                    * 
+*                    * By Viewing this source code, you agree to our Terms of Use & Privacy Policy, which is available on:
+*                    *
+*                    * https://mylot.org/tnc
+*                    *
+*                    * No legal criminal, civil or family action and harm can be caused to the owning entities including but not limited to
+*                    *
+*                    * directors, dealers, super, agents and QuickPlay LLP in any means whatsoever.
+*                    *
+*                    * Your further viewing of this site or code means you agree to accept the above terms.
+*
+*
+*
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Client Sale | MyLotto</title>
+    <link rel="stylesheet" href="../style.css" />
+  </head>
+
+  <style>
+    body {
+      font-family: "lato", sans-serif;
+    }
+    .container {
+      display: flex;
+      margin-left: 10vw;
+      align-items: center;
+      margin-top: 30px;
+    }
+    .sale-table {
+      width: 60vw;
+    }
+    .sale-table li {
+      /* width: 50vw; */
+      border-radius: 3px;
+      padding: 0px 30px;
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+    }
+    .sale-table .table-header {
+      background-color: white;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      color: orangered;
+    }
+    .sale-table .table-row {
+      background-color: #fff;
+      box-shadow: 0px 0px 9px 0px rgba(0, 0, 0, 0.1);
+    }
+    @media all and (max-width: 767px) {
+      .table-header {
+        display: none;
+      }
+      li {
+        display: block;
+      }
+      .col {
+        flex-basis: 50%;
+      }
+      .col {
+        display: flex;
+        padding: 10px 0;
+      }
+    }
+  </style>
+  <body>
+    <div class="header">
+      <div style="display: flex; justify-content: space-between">
+        <h2 style="font-family: Poppins">>> MyLot</h2>
+        <h3 class="margin-left-pc" id="time-counter"></h3>
+      </div>
+      <div class="header-user">
+        <p class="mob-margin-top-less-15" id="profile-name">Client:&nbsp;</p>
+        <p class="mob-margin-top-less-15">
+          Client Balance: <span id="user-credit"></span>
+        </p>
+      </div>
+    </div>
+
+    <div
+      style="display: flex; justify-content: space-evenly; margin-bottom: 15px"
+    >
+      <a class="btn-submit" href="/">Back</a>
+    </div>
+    <div id="sale-div" style="padding: 0px 10px">
+      <div style="display: flex; justify-content: center">
+        <input id="date" type="date" />
+      </div>
+      <br />
+      <div style="display: flex; justify-content: center; margin-top: -15px">
+        <a id="showBtn" class="btn-submit">Show</a>
+      </div>
+
+      <div class="container">
+        <ul class="sale-table" id="sale-tbody"></ul>
+      </div>
+      <hr style="width: 45vw" />
+      <p style="text-align: center; font-size: 18px">
+        <strong>Total Sale: <span id="dayTotSale">0</span></strong>
+      </p>
+    </div>
+
+    <div style="height: 50px"></div>
+
+    <br /><br />
+    <div style="background-color: white; margin-bottom: -10px">
+      <p
+        style="
+          text-align: left;
+          font-size: 10px;
+          font-family: Poppins;
+          color: gray;
+          padding: 10px 20px;
+          line-height: 12px;
+        "
+      >
+        © 2022, MyLot - QuickPlay Technologies LLP.<br />
+        Only <span style="color: orangered">mylotto.in</span> &
+        <span style="color: orangered">mylot.org</span> are our authorized
+        domains
+      </p>
+    </div>
+
+    <script type="module" src="./firebase.js"></script>
+  </body>
+</html>

@@ -79,15 +79,25 @@ async function drawClientList(data) {
       <div style="display: flex; justify-content: space-between">
         <p>` +
       i.name +
+      // `</p>
+      // <p style="display: none;" id="day-sale-` +
+      // i.email +
+      // `">Balance: [?]</p>
+      // <p class="hollow-btn-text" id="showBtn-` +
+      // i.email +
+      // `">Show Balance</p>
+      // </div>
+      // <p style="margin-top: -15px">` +
+      // email +
       `</p>
       <p style="display: none;" id="day-sale-` +
-      i.email +
-      `">Balance: [?]</p>
+      email +
+      `">Day Sale: -</p>
       <p class="hollow-btn-text" id="showBtn-` +
-      i.email +
-      `">Show Balance</p>
-      </div>
-      <p style="margin-top: -15px">` +
+      email +
+      `">Show Day Sale</p>
+    </div>
+    <p style="margin-top: -15px">` +
       email +
       `</p>
       <div style="display: flex; justify-content: space-around">
@@ -97,7 +107,9 @@ async function drawClientList(data) {
         <button class="btn-submit" id="subs-` +
       email +
       `">-</button>
-       
+      <button class="btn-submit" id="details-` +
+      email +
+      `">Details</button>
       </div>
       <input type="number" class="cred-amt"  placeholder="0" id="credAmt-` +
       email +
@@ -132,28 +144,52 @@ async function addDOMfunc(emails) {
       await subsCred(dealerEmail, u_email, amount);
     });
 
+    let detailsBtn = document.getElementById(`details-${u_email}`);
+    detailsBtn.addEventListener("click", async (e) => {
+      window.location = `/client-details/index.html?c=${u_email}`;
+    });
+
     let showBtn = document.getElementById(`showBtn-${u_email}`);
     showBtn.addEventListener("click", async (e) => {
-      showBal(u_email);
+      showDaySale(u_email);
     });
   });
 }
 
-async function showBal(mail) {
+async function showDaySale(mail) {
   const balDoc = await getDoc(doc(db, "users", mail));
   if (!balDoc.exists()) {
     document.getElementById(`showBtn-${mail}`).style.display = "none";
     document.getElementById(`day-sale-${mail}`).style.display = "";
-    document.getElementById(`day-sale-${mail}`).innerText = "Unavailable";
+    document.getElementById(`day-sale-${mail}`).innerText = "0";
     return;
   }
-  const balance = balDoc.data().credit;
+  // const balance = balDoc.data().credit;
+
+  let { date } = await fetchDate();
+  console.log(date);
+  const daySale = doc(db, "users", mail, "sale", date);
+  const docSnap = await getDoc(daySale);
+  let total = 0;
+  if (!docSnap.exists()) {
+    document.getElementById(`showBtn-${mail}`).style.display = "none";
+    document.getElementById(`day-sale-${mail}`).style.display = "";
+    document.getElementById(`day-sale-${mail}`).innerHTML = "₹ 0";
+  } else {
+    if (docSnap.exists()) {
+      const saleD = docSnap.data();
+      let keys = Object.keys(saleD);
+      keys.forEach((dtime) => {
+        total += saleD[dtime];
+      });
+    }
+  }
 
   document.getElementById(`showBtn-${mail}`).style.display = "none";
   document.getElementById(`day-sale-${mail}`).style.display = "";
-  document.getElementById(`day-sale-${mail}`).innerText = "Balance: " + balance;
+  // document.getElementById(`day-sale-${mail}`).innerText = "Balance: " + balance;
+  document.getElementById(`day-sale-${mail}`).innerText = "₹ " + total;
 }
-
 async function addCred(dealerEmail, u_email, amount) {
   try {
     let { date, time } = await fetchDate();

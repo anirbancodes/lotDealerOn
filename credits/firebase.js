@@ -55,38 +55,73 @@ async function historyTable(email, date, AC) {
   }
   document.getElementById("credits-list").innerHTML = "";
   document.getElementById("comment-text").innerText = "";
-  const ref = doc(db, "dealers", email, "credits", date);
   if (!AC) AC = "agents";
-  const docSnap = await getDoc(ref);
-  if (docSnap.exists()) {
-    const credits = docSnap.data()[AC];
-    if (!credits) {
-      document.getElementById(
-        "comment-text"
-      ).innerText = `No ${AC} credits transfer today`;
-      return;
-    }
-    credits.forEach((i) => {
-      document.getElementById("credits-list").innerHTML +=
-        `<div class="client m-b-5">
+
+  if (AC != "super") {
+    const ref = doc(db, "dealers", email, "credits", date);
+    const docSnap = await getDoc(ref);
+    if (docSnap.exists()) {
+      const credits = docSnap.data()[AC];
+      if (!credits) {
+        document.getElementById(
+          "comment-text"
+        ).innerText = `No ${AC} credits transfer today`;
+        return;
+      }
+      credits.forEach((i) => {
+        document.getElementById("credits-list").innerHTML +=
+          `<div class="client m-b-5">
       <div class="p-1-5">
         <p>` +
-        i.email +
-        `</p>
+          i.email +
+          `</p>
         <div class="card-inner">
           <p style="color: orangered">` +
-        i.amt +
-        `</p>
+          i.amt +
+          `</p>
           <p>` +
-        i.time +
-        `</p>
+          i.time +
+          `</p>
         </div>
       </div>
     </div>`;
-    });
-  } else {
-    document.getElementById("comment-text").innerText =
-      "No credits transfer today";
+      });
+    } else {
+      document.getElementById("comment-text").innerText =
+        "No credits transfer today";
+    }
+  } else if (AC == "super") {
+    const ref = doc(db, "dealers", email, "superCredit", date);
+    const docSnap = await getDoc(ref);
+    if (docSnap.exists()) {
+      const credits = docSnap.data().lotto;
+      if (!credits) {
+        document.getElementById("comment-text").innerText =
+          "No credit recieved from super today";
+        return;
+      }
+      credits.forEach((i) => {
+        document.getElementById("credits-list").innerHTML +=
+          `<div class="client m-b-5">
+      <div class="p-1-5">
+        <p>` +
+          "Super" +
+          `</p>
+        <div class="card-inner">
+          <p style="color: orangered">` +
+          i.amt +
+          `</p>
+          <p>` +
+          i.time +
+          `</p>
+        </div>
+      </div>
+    </div>`;
+      });
+    } else {
+      document.getElementById("comment-text").innerText =
+        "No credits transfer today";
+    }
   }
 }
 const showBtn = document.getElementById("showBtn");
