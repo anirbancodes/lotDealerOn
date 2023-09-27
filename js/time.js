@@ -16,14 +16,14 @@ const optionsQcTime1 = {
 
 async function fetchDate() {
   let date, time;
-  await fetch("https://qctime1.p.rapidapi.com/time", optionsQcTime1)
+  await fetch("https://time.api.mylot.org")
     .then((res) => res.json())
     .then((res) => {
       date = res.date;
       time = res.time + " " + res.ampm;
     })
     .catch(async (err) => {
-      await fetch("https://livetime.p.rapidapi.com/time", optionsLiveTime)
+      await fetch("https://time.api.mylotto.in")
         .then((res) => res.json())
         .then((res) => {
           date = res.date;
